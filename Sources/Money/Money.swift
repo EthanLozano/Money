@@ -278,7 +278,7 @@ public enum MoneyDecodingOptions: Equatable {
     case roundFloatingPointAmount
 
     /**
-     Decodes the string key of `amount` and/or `currencyCode`
+     Decodes the string key of `amount` and/or `currency`
      with user defined values.
      */
     case customKeys([MoneyCodingKey: String])
@@ -307,7 +307,7 @@ public enum MoneyEncodingOptions: Equatable {
     case encodeAmountAsString
 
     /**
-     Encodes the string key of `amount` and/or `currencyCode`
+     Encodes the string key of `amount` and/or `currency`
      with user defined values.
      */
     case customKeys([MoneyCodingKey: String])
@@ -315,16 +315,17 @@ public enum MoneyEncodingOptions: Equatable {
 
 public enum MoneyCodingKey: String {
     case amount
-    case currencyCode
+    case currency
 }
 
 extension Money: Codable {
+
     public init(from decoder: Decoder) throws {
         let options = decoder.userInfo[.moneyDecodingOptions] as? [MoneyDecodingOptions] ?? []
 
         if let keyedContainer = try? decoder.container(keyedBy: StringKey.self) {
             let keyMap = options.compactMap(Money.keyMap).first
-            let currencyKey = try Money.codingKey(for: .currencyCode, in: keyMap)
+            let currencyKey = try Money.codingKey(for: .currency, in: keyMap)
             let currencyCode = try keyedContainer.decode(String.self, forKey: currencyKey)
             guard currencyCode == Currency.code else {
                 let context = DecodingError.Context(codingPath: keyedContainer.codingPath, debugDescription: "Currency mismatch: expected \(Currency.code), got \(currencyCode)")
@@ -384,7 +385,7 @@ extension Money: Codable {
         } else {
             var keyedContainer = encoder.container(keyedBy: StringKey.self)
             let keyMap = options.compactMap(Money.keyMap).first
-            let currencyKey = try Money.codingKey(for: .currencyCode, in: keyMap)
+            let currencyKey = try Money.codingKey(for: .currency, in: keyMap)
             try keyedContainer.encode(Currency.code, forKey: currencyKey)
             let amountKey = try Money.codingKey(for: .amount, in: keyMap)
             if options.contains(.encodeAmountAsString) {

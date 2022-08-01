@@ -17,7 +17,7 @@ final class EncodingTests: XCTestCase {
         let data = try encoder.encode(money)
         let actual = String(data: data, encoding: .utf8)
 
-        let expected = #"{"amount":27.31,"currencyCode":"USD"}"#
+        let expected = #"{"amount":27.31,"currency":"USD"}"#
 
         XCTAssertEqual(actual, expected)
     }
@@ -28,7 +28,7 @@ final class EncodingTests: XCTestCase {
         let data = try encoder.encode(money)
         let actual = String(data: data, encoding: .utf8)
 
-        let expected = #"{"amount":"27.31","currencyCode":"USD"}"#
+        let expected = #"{"amount":"27.31","currency":"USD"}"#
 
         XCTAssertEqual(actual, expected)
     }
@@ -36,13 +36,13 @@ final class EncodingTests: XCTestCase {
     func testEncodeKeyContainerWithCustomKeys() throws {
         encoder.moneyEncodingOptions = [.customKeys([
             .amount: "amountValue",
-            .currencyCode: "currency",
+            .currency: "code",
         ])]
 
         let data = try encoder.encode(money)
         let actual = String(data: data, encoding: .utf8)
 
-        let expected = #"{"amountValue":27.31,"currency":"USD"}"#
+        let expected = #"{"amountValue":27.31,"code":"USD"}"#
 
         XCTAssertEqual(actual, expected)
     }
